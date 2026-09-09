@@ -1,0 +1,143 @@
+package com.himeshan.smartpantrymanager;
+
+import android.os.Bundle;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.Toast;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+public class AddEditIngredientActivity extends AppCompatActivity {
+
+    private EditText etIngredientName;
+    private EditText etQuantity;
+    private EditText etExpiryDate;
+    private Spinner spinnerUnit;
+    private Button btnSaveIngredient;
+    private Button btnCancel;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_add_edit_ingredient);
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars =
+                    insets.getInsets(WindowInsetsCompat.Type.systemBars());
+
+            v.setPadding(
+                    systemBars.left,
+                    systemBars.top,
+                    systemBars.right,
+                    systemBars.bottom
+            );
+
+            return insets;
+        });
+
+
+        etIngredientName = findViewById(R.id.etIngredientName);
+        etQuantity = findViewById(R.id.etQuantity);
+        etExpiryDate = findViewById(R.id.etExpiryDate);
+        spinnerUnit = findViewById(R.id.spinnerUnit);
+        btnSaveIngredient = findViewById(R.id.btnSaveIngredient);
+        btnCancel = findViewById(R.id.btnCancel);
+
+
+        String[] units = {
+                "Select Unit",
+                "g",
+                "kg",
+                "ml",
+                "L",
+                "Item(s)",
+                "Cup(s)",
+                "Tablespoon(s)",
+                "Teaspoon(s)"
+        };
+
+        ArrayAdapter<String> unitAdapter =
+                new ArrayAdapter<>(
+                        this,
+                        android.R.layout.simple_spinner_item,
+                        units
+                );
+
+        unitAdapter.setDropDownViewResource(
+                android.R.layout.simple_spinner_dropdown_item
+        );
+
+        spinnerUnit.setAdapter(unitAdapter);
+
+        // Save button
+        btnSaveIngredient.setOnClickListener(v -> validateIngredient());
+
+        // Cancel button
+        btnCancel.setOnClickListener(v -> finish());
+    }
+
+    private void validateIngredient() {
+
+        String ingredientName =
+                etIngredientName.getText().toString().trim();
+
+        String quantityText =
+                etQuantity.getText().toString().trim();
+
+        // Validate ingredient name
+        if (ingredientName.isEmpty()) {
+            etIngredientName.setError("Ingredient name is required");
+            etIngredientName.requestFocus();
+            return;
+        }
+
+
+        if (quantityText.isEmpty()) {
+            etQuantity.setError("Quantity is required");
+            etQuantity.requestFocus();
+            return;
+        }
+
+        double quantity;
+
+        try {
+            quantity = Double.parseDouble(quantityText);
+        } catch (NumberFormatException e) {
+            etQuantity.setError("Enter a valid quantity");
+            etQuantity.requestFocus();
+            return;
+        }
+
+
+        if (quantity <= 0) {
+            etQuantity.setError("Quantity must be greater than 0");
+            etQuantity.requestFocus();
+            return;
+        }
+
+
+        if (spinnerUnit.getSelectedItemPosition() == 0) {
+            Toast.makeText(
+                    this,
+                    "Please select a unit",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        Toast.makeText(
+                this,
+                "Ingredient details are valid",
+                Toast.LENGTH_SHORT
+        ).show();
+    }
+}
