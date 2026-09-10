@@ -1,5 +1,6 @@
 package com.himeshan.smartpantrymanager;
-
+import android.widget.Toast;
+import androidx.appcompat.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -126,8 +127,68 @@ public class MainActivity extends AppCompatActivity {
             recyclerViewPantry.setVisibility(View.VISIBLE);
             tvEmptyPantry.setVisibility(View.GONE);
 
-            ingredientAdapter =
-                    new IngredientAdapter(ingredientList);
+            ingredientAdapter = new IngredientAdapter(
+                    ingredientList,
+                    new IngredientAdapter.OnIngredientActionListener() {
+
+                        @Override
+                        public void onEditClick(Ingredient ingredient) {
+
+                            Intent intent = new Intent(
+                                    MainActivity.this,
+                                    AddEditIngredientActivity.class
+                            );
+
+                            intent.putExtra("ingredient_id", ingredient.getId());
+                            intent.putExtra("ingredient_name", ingredient.getName());
+                            intent.putExtra("ingredient_quantity", ingredient.getQuantity());
+                            intent.putExtra("ingredient_unit", ingredient.getUnit());
+                            intent.putExtra("ingredient_expiry", ingredient.getExpiryDate());
+
+                            startActivity(intent);
+                        }
+
+                        @Override
+                        public void onDeleteClick(Ingredient ingredient) {
+
+                            new AlertDialog.Builder(MainActivity.this)
+                                    .setTitle("Delete Ingredient")
+                                    .setMessage(
+                                            "Are you sure you want to delete "
+                                                    + ingredient.getName()
+                                                    + "?"
+                                    )
+                                    .setPositiveButton("Delete", (dialog, which) -> {
+
+                                        int result =
+                                                databaseHelper.deleteIngredient(
+                                                        ingredient.getId()
+                                                );
+
+                                        if (result > 0) {
+
+                                            Toast.makeText(
+                                                    MainActivity.this,
+                                                    "Ingredient deleted successfully",
+                                                    Toast.LENGTH_SHORT
+                                            ).show();
+
+                                            loadPantryItems();
+
+                                        } else {
+
+                                            Toast.makeText(
+                                                    MainActivity.this,
+                                                    "Failed to delete ingredient",
+                                                    Toast.LENGTH_SHORT
+                                            ).show();
+                                        }
+                                    })
+                                    .setNegativeButton("Cancel", null)
+                                    .show();
+                        }
+                    }
+            );
 
             recyclerViewPantry.setAdapter(ingredientAdapter);
         }

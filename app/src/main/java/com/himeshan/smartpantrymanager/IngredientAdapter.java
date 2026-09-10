@@ -3,6 +3,7 @@ package com.himeshan.smartpantrymanager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,9 +15,19 @@ public class IngredientAdapter
         extends RecyclerView.Adapter<IngredientAdapter.IngredientViewHolder> {
 
     private final List<Ingredient> ingredientList;
+    private final OnIngredientActionListener listener;
 
-    public IngredientAdapter(List<Ingredient> ingredientList) {
+    public interface OnIngredientActionListener {
+        void onEditClick(Ingredient ingredient);
+        void onDeleteClick(Ingredient ingredient);
+    }
+
+    public IngredientAdapter(
+            List<Ingredient> ingredientList,
+            OnIngredientActionListener listener
+    ) {
         this.ingredientList = ingredientList;
+        this.listener = listener;
     }
 
     @NonNull
@@ -54,6 +65,14 @@ public class IngredientAdapter
         } else {
             holder.tvIngredientExpiry.setText("Expiry: " + expiryDate);
         }
+
+        holder.btnEditIngredient.setOnClickListener(v ->
+                listener.onEditClick(ingredient)
+        );
+
+        holder.btnDeleteIngredient.setOnClickListener(v ->
+                listener.onDeleteClick(ingredient)
+        );
     }
 
     @Override
@@ -68,6 +87,9 @@ public class IngredientAdapter
         TextView tvIngredientQuantity;
         TextView tvIngredientExpiry;
 
+        Button btnEditIngredient;
+        Button btnDeleteIngredient;
+
         public IngredientViewHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -79,6 +101,12 @@ public class IngredientAdapter
 
             tvIngredientExpiry =
                     itemView.findViewById(R.id.tvIngredientExpiry);
+
+            btnEditIngredient =
+                    itemView.findViewById(R.id.btnEditIngredient);
+
+            btnDeleteIngredient =
+                    itemView.findViewById(R.id.btnDeleteIngredient);
         }
     }
 }
