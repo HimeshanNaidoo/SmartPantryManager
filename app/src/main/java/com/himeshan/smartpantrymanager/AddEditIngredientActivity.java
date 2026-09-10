@@ -21,6 +21,9 @@ public class AddEditIngredientActivity extends AppCompatActivity {
     private Spinner spinnerUnit;
     private Button btnSaveIngredient;
     private Button btnCancel;
+    private DatabaseHelper databaseHelper;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +53,7 @@ public class AddEditIngredientActivity extends AppCompatActivity {
         spinnerUnit = findViewById(R.id.spinnerUnit);
         btnSaveIngredient = findViewById(R.id.btnSaveIngredient);
         btnCancel = findViewById(R.id.btnCancel);
+        databaseHelper = new DatabaseHelper(this);
 
 
         String[] units = {
@@ -92,7 +96,7 @@ public class AddEditIngredientActivity extends AppCompatActivity {
         String quantityText =
                 etQuantity.getText().toString().trim();
 
-        // Validate ingredient name
+
         if (ingredientName.isEmpty()) {
             etIngredientName.setError("Ingredient name is required");
             etIngredientName.requestFocus();
@@ -133,11 +137,35 @@ public class AddEditIngredientActivity extends AppCompatActivity {
 
             return;
         }
+        String unit = spinnerUnit.getSelectedItem().toString();
+        String expiryDate = etExpiryDate.getText().toString().trim();
 
-        Toast.makeText(
-                this,
-                "Ingredient details are valid",
-                Toast.LENGTH_SHORT
-        ).show();
+        Ingredient ingredient = new Ingredient(
+                ingredientName,
+                quantity,
+                unit,
+                expiryDate.isEmpty() ? null : expiryDate
+        );
+
+        long result = databaseHelper.addIngredient(ingredient);
+
+        if (result != -1) {
+
+            Toast.makeText(
+                    this,
+                    "Ingredient added successfully",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            finish();
+
+        } else {
+
+            Toast.makeText(
+                    this,
+                    "Failed to add ingredient",
+                    Toast.LENGTH_SHORT
+            ).show();
+        }
     }
 }

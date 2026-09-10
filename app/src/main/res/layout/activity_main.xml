@@ -44,15 +44,27 @@
         android:layout_marginTop="24dp"
         android:layout_marginBottom="12dp" />
 
-    <TextView
-        android:id="@+id/tvEmptyPantry"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:text="Your pantry is empty.&#10;Add an ingredient to get started."
-        android:textSize="16sp"
-        android:textColor="#777777" />
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewPantry"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tvEmptyPantry"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="Your pantry is empty.&#10;Add an ingredient to get started."
+            android:textSize="16sp"
+            android:textColor="#777777" />
+
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
