@@ -1,4 +1,5 @@
 package com.himeshan.smartpantrymanager;
+import android.content.SharedPreferences;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import android.content.Intent;
@@ -51,25 +52,25 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Connect buttons
+
         btnAddIngredient = findViewById(R.id.btnAddIngredient);
         btnPantry = findViewById(R.id.btnPantry);
         btnRecipes = findViewById(R.id.btnRecipes);
         btnSettings = findViewById(R.id.btnSettings);
 
-        // Connect pantry list
+
         recyclerViewPantry = findViewById(R.id.recyclerViewPantry);
         tvEmptyPantry = findViewById(R.id.tvEmptyPantry);
 
-        // Create database helper
+
         databaseHelper = new DatabaseHelper(this);
 
-        // RecyclerView layout
+
         recyclerViewPantry.setLayoutManager(
                 new LinearLayoutManager(this)
         );
 
-        // Add Ingredient
+
         btnAddIngredient.setOnClickListener(v -> {
             Intent intent = new Intent(
                     MainActivity.this,
@@ -81,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         btnPantry.setOnClickListener(v -> {
-            // No action required
+
         });
 
 
@@ -94,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Settings
+
         btnSettings.setOnClickListener(v -> {
             Intent intent = new Intent(
                     MainActivity.this,
@@ -127,8 +128,19 @@ public class MainActivity extends AppCompatActivity {
             recyclerViewPantry.setVisibility(View.VISIBLE);
             tvEmptyPantry.setVisibility(View.GONE);
 
+            SharedPreferences sharedPreferences =
+                    getSharedPreferences(
+                            "SmartPantrySettings",
+                            MODE_PRIVATE
+                    );
+            boolean expiryAlertsEnabled =
+                    sharedPreferences.getBoolean(
+                            "expiry_alerts_enabled",
+                            true
+                    );
             ingredientAdapter = new IngredientAdapter(
                     ingredientList,
+                    expiryAlertsEnabled,
                     new IngredientAdapter.OnIngredientActionListener() {
 
                         @Override
