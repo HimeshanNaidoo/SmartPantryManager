@@ -769,7 +769,73 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return ingredientList;
     }
 
+    public List<RecipeIngredient> getRecipeIngredients(int recipeId) {
 
+        List<RecipeIngredient> recipeIngredients =
+                new ArrayList<>();
+
+        SQLiteDatabase db =
+                getReadableDatabase();
+
+        Cursor cursor = db.query(
+                TABLE_RECIPE_INGREDIENTS,
+                null,
+                RI_COLUMN_RECIPE_ID + " = ?",
+                new String[]{
+                        String.valueOf(recipeId)
+                },
+                null,
+                null,
+                null
+        );
+
+        while (cursor.moveToNext()) {
+
+            int id =
+                    cursor.getInt(
+                            cursor.getColumnIndexOrThrow(
+                                    RI_COLUMN_ID
+                            )
+                    );
+
+            String ingredientName =
+                    cursor.getString(
+                            cursor.getColumnIndexOrThrow(
+                                    RI_COLUMN_INGREDIENT_NAME
+                            )
+                    );
+
+            double quantityRequired =
+                    cursor.getDouble(
+                            cursor.getColumnIndexOrThrow(
+                                    RI_COLUMN_QUANTITY
+                            )
+                    );
+
+            String unit =
+                    cursor.getString(
+                            cursor.getColumnIndexOrThrow(
+                                    RI_COLUMN_UNIT
+                            )
+                    );
+
+            RecipeIngredient ingredient =
+                    new RecipeIngredient(
+                            id,
+                            recipeId,
+                            ingredientName,
+                            quantityRequired,
+                            unit
+                    );
+
+            recipeIngredients.add(ingredient);
+        }
+
+        cursor.close();
+        db.close();
+
+        return recipeIngredients;
+    }
     public int updateIngredient(Ingredient ingredient) {
 
         SQLiteDatabase db = getWritableDatabase();
