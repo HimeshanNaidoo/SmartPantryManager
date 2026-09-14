@@ -1,5 +1,8 @@
 package com.himeshan.smartpantrymanager;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -166,7 +169,7 @@ public class AddEditIngredientActivity extends AppCompatActivity {
             }
         }
 
-        // Save / Update button
+
         btnSaveIngredient.setOnClickListener(
                 v -> validateIngredient()
         );
@@ -191,7 +194,7 @@ public class AddEditIngredientActivity extends AppCompatActivity {
                         .toString()
                         .trim();
 
-        // Validate ingredient name
+
         if (ingredientName.isEmpty()) {
 
             etIngredientName.setError(
@@ -271,6 +274,16 @@ public class AddEditIngredientActivity extends AppCompatActivity {
                         .trim();
 
 
+        if (!expiryDate.isEmpty() && !isValidExpiryDate(expiryDate)) {
+
+            etExpiryDate.setError(
+                    "Enter a valid date in DD/MM/YYYY format"
+            );
+
+            etExpiryDate.requestFocus();
+            return;
+        }
+
         if (isEditMode) {
 
             Ingredient ingredient =
@@ -285,10 +298,9 @@ public class AddEditIngredientActivity extends AppCompatActivity {
                     );
 
             int result =
-                    databaseHelper
-                            .updateIngredient(
-                                    ingredient
-                            );
+                    databaseHelper.updateIngredient(
+                            ingredient
+                    );
 
             if (result > 0) {
 
@@ -309,10 +321,7 @@ public class AddEditIngredientActivity extends AppCompatActivity {
                 ).show();
             }
 
-        }
-
-
-        else {
+        } else {
 
             Ingredient ingredient =
                     new Ingredient(
@@ -325,10 +334,9 @@ public class AddEditIngredientActivity extends AppCompatActivity {
                     );
 
             long result =
-                    databaseHelper
-                            .addIngredient(
-                                    ingredient
-                            );
+                    databaseHelper.addIngredient(
+                            ingredient
+                    );
 
             if (result != -1) {
 
@@ -350,4 +358,32 @@ public class AddEditIngredientActivity extends AppCompatActivity {
             }
         }
     }
+
+    private boolean isValidExpiryDate(String date) {
+
+
+        if (!date.matches("\\d{2}/\\d{2}/\\d{4}")) {
+            return false;
+        }
+
+        SimpleDateFormat dateFormat =
+                new SimpleDateFormat(
+                        "dd/MM/yyyy",
+                        Locale.getDefault()
+                );
+
+
+        dateFormat.setLenient(false);
+
+        try {
+
+            dateFormat.parse(date);
+            return true;
+
+        } catch (ParseException e) {
+
+            return false;
+        }
+    }
 }
+
