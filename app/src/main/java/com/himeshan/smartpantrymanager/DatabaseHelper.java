@@ -396,8 +396,49 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private String normalizeIngredientName(String name) {
-        return name.trim().toLowerCase(Locale.ROOT);
+
+        String normalized =
+                name.trim()
+                        .toLowerCase(Locale.ROOT)
+                        .replaceAll("\\s+", " ");
+
+
+        if (normalized.endsWith("oes")
+                && normalized.length() > 3) {
+
+            normalized =
+                    normalized.substring(
+                            0,
+                            normalized.length() - 2
+                    );
+        }
+
+
+        if (normalized.endsWith("ies")
+                && normalized.length() > 3) {
+
+            normalized =
+                    normalized.substring(
+                            0,
+                            normalized.length() - 3
+                    ) + "y";
+        }
+
+
+        if (normalized.endsWith("s")
+                && !normalized.endsWith("ss")
+                && normalized.length() > 1) {
+
+            normalized =
+                    normalized.substring(
+                            0,
+                            normalized.length() - 1
+                    );
+        }
+
+        return normalized;
     }
+
 
     private String getUnitCategory(String unit) {
 
@@ -627,7 +668,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                 requiredUnit
                         );
 
-                // Strict rule:
+
 
                 if (availableQuantity < requiredQuantity) {
 
